@@ -628,5 +628,271 @@
       ],
       "success": true
     }
+  },
+  {
+    "name": "SLT (equal)",
+    "hint": "Same as LT but treats arguments as signed numbers. -1 < -1 = false (0)",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nPUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nSLT",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff12"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SLT (greater)",
+    "hint": "Same as LT but treats arguments as signed numbers. -1 < -1 = false (0)",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nPUSH1 0\nSLT",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff600012"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SGT",
+    "hint": "Same as GT but treats arguments as signed numbers. No effect on \"positive\" numbers: 10 > 9 = true (1)",
+    "code": {
+      "asm": "PUSH1 9\nPUSH1 10\nSGT",
+      "bin": "6009600a13"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SGT (equal)",
+    "hint": "Same as GT but treats arguments as signed numbers. -2 > -2 = false (0)",
+    "code": {
+      "asm": "PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe\nPUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe\nSGT",
+      "bin": "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe13"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SGT (greater)",
+    "hint": "Same as GT but treats arguments as signed numbers. -2 > -3 = true (1)",
+    "code": {
+      "asm": "PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd\nPUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe\nSGT",
+      "bin": "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe13"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "EQ",
+    "hint": "10 == 10 = true (1)",
+    "code": {
+      "asm": "PUSH1 10\nPUSH1 10\nEQ",
+      "bin": "600a600a14"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "EQ (not equal)",
+    "hint": "10 == 9 = false (0)",
+    "code": {
+      "asm": "PUSH1 9\nPUSH1 10\nEQ",
+      "bin": "6009600a14"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "ISZERO (not zero)",
+    "hint": "If the top element on the stack is not zero, pushes 0",
+    "code": {
+      "asm": "PUSH1 9\nISZERO",
+      "bin": "600915"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "ISZERO (zero)",
+    "hint": "If the top element on the stack is zero, pushes 1",
+    "code": {
+      "asm": "PUSH1 0\nISZERO",
+      "bin": "600015"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "NOT",
+    "hint": "Bitwise NOT operation, flips every bit 1->0, 0->1",
+    "code": {
+      "asm": "PUSH1 0x0f\nNOT",
+      "bin": "600f19"
+    },
+    "expect": {
+      "stack": [
+        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "AND",
+    "hint": "Bitwise AND operation of the top 2 items on the stack",
+    "code": {
+      "asm": "PUSH1 0xe\nPUSH1 0x3\nAND",
+      "bin": "600e600316"
+    },
+    "expect": {
+      "stack": [
+        "0x2"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "OR",
+    "hint": "Bitwise OR operation of the top 2 items on the stack",
+    "code": {
+      "asm": "PUSH1 0xe\nPUSH1 0x3\nOR",
+      "bin": "600e600317"
+    },
+    "expect": {
+      "stack": [
+        "0xf"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "XOR",
+    "hint": "Bitwise XOR operation of the top 2 items on the stack",
+    "code": {
+      "asm": "PUSH1 0xf0\nPUSH1 0x0f\nXOR",
+      "bin": "60f0600f18"
+    },
+    "expect": {
+      "stack": [
+        "0xff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SHL",
+    "hint": "Bitwise shift left, 1 << 1 = 2",
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 1\nSHL",
+      "bin": "600160011b"
+    },
+    "expect": {
+      "stack": [
+        "0x2"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SHL (discards)",
+    "hint": "Bits that end up outside MAX_UINT256 are discarded",
+    "code": {
+      "asm": "PUSH32 0xFF00000000000000000000000000000000000000000000000000000000000000\nPUSH1 4\nSHL",
+      "bin": "7fff0000000000000000000000000000000000000000000000000000000000000060041b"
+    },
+    "expect": {
+      "stack": [
+        "0xf000000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SHL (too large)",
+    "hint": "When shift amount is too large, returns zero",
+    "code": {
+      "asm": "PUSH1 1\nPUSH4 0xFFFFFFFF\nSHL",
+      "bin": "600163ffffffff1b"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SHR",
+    "hint": "Bitwise shift right, 2 >> 1 = 1",
+    "code": {
+      "asm": "PUSH1 2\nPUSH1 1\nSHR",
+      "bin": "600260011c"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SHR (discards)",
+    "hint": "Bits that end up outside are discarded",
+    "code": {
+      "asm": "PUSH1 0xFF\nPUSH1 4\nSHR",
+      "bin": "60ff60041c"
+    },
+    "expect": {
+      "stack": [
+        "0xf"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SHR (too large)",
+    "hint": "When shift amount is too large, returns zero",
+    "code": {
+      "asm": "PUSH1 1\nPUSH4 0xFFFFFFFF\nSHR",
+      "bin": "600163ffffffff1c"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
   }
 ]
