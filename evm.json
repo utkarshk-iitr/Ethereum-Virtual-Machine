@@ -1,0 +1,393 @@
+[
+  {
+    "name": "STOP",
+    "hint": "",
+    "code": {
+      "asm": "STOP",
+      "bin": "00"
+    },
+    "expect": {
+      "success": true,
+      "stack": []
+    }
+  },
+  {
+    "name": "PUSH0",
+    "hint": "Read \"Program Counter\" section of the course learning materials for an example on how to parse the bytecode",
+    "code": {
+      "asm": "PUSH0",
+      "bin": "5f"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH1",
+    "hint": "Read \"Program Counter\" section of the course learning materials for an example on how to parse the bytecode",
+    "code": {
+      "asm": "PUSH1 1",
+      "bin": "6001"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH2",
+    "hint": "PUSH2 reads the next 2 bytes, don't forget to properly increment PC",
+    "code": {
+      "asm": "PUSH2 0x1122",
+      "bin": "611122"
+    },
+    "expect": {
+      "stack": [
+        "0x1122"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH4",
+    "hint": "PUSH4 reads the next 4 bytes",
+    "code": {
+      "asm": "PUSH4 0x11223344",
+      "bin": "6311223344"
+    },
+    "expect": {
+      "stack": [
+        "0x11223344"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH6",
+    "hint": "PUSH6 reads the next 6 bytes. Can you implement all PUSH1...PUSH32 using the same code?",
+    "code": {
+      "asm": "PUSH6 0x112233445566",
+      "bin": "65112233445566"
+    },
+    "expect": {
+      "stack": [
+        "0x112233445566"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH10",
+    "hint": "SIZE = OPCODE - PUSH1 + 1, then transform take the next SIZE bytes, PC += SIZE",
+    "code": {
+      "asm": "PUSH10 0x112233445566778899aa",
+      "bin": "69112233445566778899aa"
+    },
+    "expect": {
+      "stack": [
+        "0x112233445566778899aa"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH11",
+    "hint": "SIZE = OPCODE - PUSH1 + 1, program.slice(pc + 1, pc + 1 + size)",
+    "code": {
+      "asm": "PUSH11 0x112233445566778899aabb",
+      "bin": "6a112233445566778899aabb"
+    },
+    "expect": {
+      "stack": [
+        "0x112233445566778899aabb"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH32",
+    "hint": "PUSH32 reads the next 32 bytes (256 bits)",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+    },
+    "expect": {
+      "stack": [
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "PUSH (twice)",
+    "hint": "Note the order of items on the stack. The tests expect the top of the stack to be the first element",
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 2",
+      "bin": "60016002"
+    },
+    "expect": {
+      "stack": [
+        "0x2",
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "POP",
+    "hint": "POP removes the top item from the stack and discards it",
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 2\nPOP",
+      "bin": "6001600250"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "STOP (midway)",
+    "hint": "Note that the `PUSH1 2` didn't execute because the program stops after STOP opcode",
+    "code": {
+      "asm": "PUSH1 1\nSTOP\nPUSH1 2",
+      "bin": "6001006002"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "ADD",
+    "hint": "ADD takes the first 2 items from the stack, adds them together and pushes the result",
+    "code": {
+      "asm": "PUSH1 0x01\nPUSH1 0x02\nADD",
+      "bin": "6001600201"
+    },
+    "expect": {
+      "stack": [
+        "0x3"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "ADD (overflow)",
+    "hint": "EVM operates with uint256, if you add 2 to the max possible value it overflows and wraps around",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nPUSH1 0x02\nADD",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff600201"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "MUL",
+    "code": {
+      "asm": "PUSH1 0x02\nPUSH1 0x03\nMUL",
+      "bin": "6002600302"
+    },
+    "expect": {
+      "stack": [
+        "0x6"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "MUL (overflow)",
+    "hint": "All math is performed with implicit [mod 2^256]",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nPUSH1 0x02\nMUL",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff600202"
+    },
+    "expect": {
+      "stack": [
+        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SUB",
+    "hint": "SUB takes the first element from the stack and subtracts the second element from the stack",
+    "code": {
+      "asm": "PUSH1 0x02\nPUSH1 0x03\nSUB",
+      "bin": "6002600303"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SUB (underflow)",
+    "hint": "Underflow works the same way as overflow, 3 - 2 wraps around and results in MAX_UINT256",
+    "code": {
+      "asm": "PUSH1 0x03\nPUSH1 0x02\nSUB",
+      "bin": "6003600203"
+    },
+    "expect": {
+      "stack": [
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "DIV",
+    "hint": "DIV takes the first element from the stack and divides it by the second element from the stack",
+    "code": {
+      "asm": "PUSH1 0x02\nPUSH1 0x06\nDIV",
+      "bin": "6002600604"
+    },
+    "expect": {
+      "stack": [
+        "0x3"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "DIV (whole)",
+    "hint": "Fraction part of the division is discarded",
+    "code": {
+      "asm": "PUSH1 0x06\nPUSH1 0x02\nDIV",
+      "bin": "6006600204"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "DIV (by zero)",
+    "hint": "In EVM you can divide by zero! Modern Solidity protects from this by adding instructions that check for zero",
+    "code": {
+      "asm": "PUSH1 0x00\nPUSH1 0x02\nDIV",
+      "bin": "6000600204"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "MOD",
+    "hint": "10 mod 3 = 1",
+    "code": {
+      "asm": "PUSH1 3\nPUSH1 10\nMOD",
+      "bin": "6003600a06"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "MOD (by larger number)",
+    "hint": "5 mod 17 = 5",
+    "code": {
+      "asm": "PUSH1 17\nPUSH1 5\nMOD",
+      "bin": "6011600506"
+    },
+    "expect": {
+      "stack": [
+        "0x5"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "MOD (by zero)",
+    "hint": "In EVM you can divide by zero! Modern Solidity protects from this by adding instructions that check for zero",
+    "code": {
+      "asm": "PUSH1 0\nPUSH1 2\nMOD",
+      "bin": "6000600206"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "ADDMOD",
+    "hint": "10 + 10 mod 8 = 4",
+    "code": {
+      "asm": "PUSH1 8\nPUSH1 10\nPUSH1 10\nADDMOD",
+      "bin": "6008600a600a08"
+    },
+    "expect": {
+      "stack": [
+        "0x4"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "ADDMOD (wrapped)",
+    "code": {
+      "asm": "PUSH1 2\nPUSH1 2\nPUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\nADDMOD",
+      "bin": "600260027fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff08"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "MULMOD",
+    "hint": "10 * 10 mod 8 = 4",
+    "code": {
+      "asm": "PUSH1 8\nPUSH1 10\nPUSH1 10\nMULMOD",
+      "bin": "6008600a600a09"
+    },
+    "expect": {
+      "stack": [
+        "0x4"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "MULMOD (wrapped)",
+    "code": {
+      "asm": "PUSH1 12\nPUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\nPUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\nMULMOD",
+      "bin": "600c7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff09"
+    },
+    "expect": {
+      "stack": [
+        "0x9"
+      ],
+      "success": true
+    },
+    "hint": ""
+  }
+]
