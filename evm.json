@@ -389,5 +389,244 @@
       "success": true
     },
     "hint": ""
+  },
+  {
+    "name": "EXP",
+    "code": {
+      "asm": "PUSH1 2\nPUSH1 10\nEXP",
+      "bin": "6002600a0a"
+    },
+    "expect": {
+      "stack": [
+        "0x64"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "SIGNEXTEND (positive)",
+    "hint": "Read \"Negative Numbers\" section of the course learning materials. SIGNEXTEND has no effect on \"positive\" numbers",
+    "code": {
+      "asm": "PUSH1 0x7F\nPUSH1 0\nSIGNEXTEND",
+      "bin": "607f60000b"
+    },
+    "expect": {
+      "stack": [
+        "0x7f"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SIGNEXTEND (negative)",
+    "hint": "Read \"Negative Numbers\" section of the course learning materials. The first bit of 0xFF is 1, so it is a negative number and needs to be padded by 1s in front",
+    "code": {
+      "asm": "PUSH1 0xFF\nPUSH1 0\nSIGNEXTEND",
+      "bin": "60ff60000b"
+    }, 
+
+    "expect": {
+      "stack": [
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SDIV",
+    "hint": "Read \"Negative Numbers\" section of the course learning materials. SDIV works like DIV for \"positive\" numbers",
+    "code": {
+      "asm": "PUSH1 10\nPUSH1 10\nSDIV",
+      "bin": "600a600a05"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SDIV (negative)",
+    "hint": "Read \"Negative Numbers\" section of the course learning materials. -2 / -1 = 2",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nPUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe\nSDIV",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe05"
+    },
+    "expect": {
+      "stack": [
+        "0x2"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SDIV (mix of negative and positive)",
+    "hint": "Read \"Negative Numbers\" section of the course learning materials. 10 / -2 = -5",
+    "code": {
+      "asm": "PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe\nPUSH1 10\nSDIV",
+      "bin": "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe600a05"
+    },
+    "expect": {
+      "stack": [
+        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffb"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SMOD",
+    "hint": "Read \"Negative Numbers\" section of the course learning materials. SMOD works like MOD for \"positive\" numbers",
+    "code": {
+      "asm": "PUSH1 3\nPUSH1 10\nSMOD",
+      "bin": "6003600a07"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SMOD (negative)",
+    "hint": "Read \"Negative Numbers\" section of the course learning materials. -10 mod -3 = -1",
+    "code": {
+      "asm": "PUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd\nPUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff8\nSMOD",
+      "bin": "7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd7ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff807"
+    },
+    "expect": {
+      "stack": [
+        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SDIV (by zero)",
+    "hint": "In EVM you can divide by zero",
+    "code": {
+      "asm": "PUSH1 0x00\nPUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd\nSDIV",
+      "bin": "60007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd05"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SMOD (by zero)",
+    "hint": "In EVM you can divide by zero",
+    "code": {
+      "asm": "PUSH1 0x00\nPUSH32 0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd\nSMOD",
+      "bin": "60007ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffd07"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "LT",
+    "hint": "9 < 10 = true (1)",
+    "code": {
+      "asm": "PUSH1 10\nPUSH1 9\nLT",
+      "bin": "600a600910"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "LT (equal)",
+    "hint": "10 < 10 = false (0)",
+    "code": {
+      "asm": "PUSH1 10\nPUSH1 10\nLT",
+      "bin": "600a600a10"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "LT (greater)",
+    "hint": "11 < 10 = false (0)",
+    "code": {
+      "asm": "PUSH1 10\nPUSH1 11\nLT",
+      "bin": "600a600b10"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "GT",
+    "hint": "10 > 9 = true (1)",
+    "code": {
+      "asm": "PUSH1 9\nPUSH1 10\nGT",
+      "bin": "6009600a11"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "GT (equal)",
+    "hint": "10 > 10 = false (0)",
+    "code": {
+      "asm": "PUSH1 10\nPUSH1 10\nGT",
+      "bin": "600a600a11"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "GT (less)",
+    "hint": "10 > 11 = false (0)",
+    "code": {
+      "asm": "PUSH1 11\nPUSH1 10\nGT",
+      "bin": "600b600a11"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SLT",
+    "hint": "Same as LT but treats arguments as signed numbers. -1 < 0 = true (1)",
+    "code": {
+      "asm": "PUSH1 0\nPUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nSLT",
+      "bin": "60007fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff12"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
   }
 ]
