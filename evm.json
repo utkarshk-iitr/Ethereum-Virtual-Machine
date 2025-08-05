@@ -894,5 +894,167 @@
       ],
       "success": true
     }
+  },
+  {
+    "name": "SAR",
+    "hint": "Like SHR but treats the argument as signed number. No effect on \"positive\" numbers, 2 >> 1 = 1",
+    "code": {
+      "asm": "PUSH1 2\nPUSH1 1\nSAR",
+      "bin": "600260011d"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SAR (fills 1s)",
+    "hint": "Note that unlike SHR, it fills the empty space with 1s",
+    "code": {
+      "asm": "PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00\nPUSH1 4\nSAR",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0060041d"
+    },
+    "expect": {
+      "stack": [
+        "0xfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SAR (too large)",
+    "hint": "When shift amount is too large and the first bit is 1, fills the whole number with 1s",
+    "code": {
+      "asm": "PUSH32 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00\nPUSH4 0xFFFFFFFF\nSAR",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0063ffffffff1d"
+    },
+    "expect": {
+      "stack": [
+        "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SAR (positive, too large)",
+    "hint": "When shift amount is too large and the first bit is 0, fills the whole number with 0s",
+    "code": {
+      "asm": "PUSH32 0x0FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00\nPUSH4 0xFFFFFFFF\nSAR",
+      "bin": "7f0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff0063ffffffff1d"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "BYTE",
+    "hint": "The value on the stack is treated as 32 bytes, take 31st (counting from the most significant one)",
+    "code": {
+      "asm": "PUSH1 0xff\nPUSH1 31\nBYTE",
+      "bin": "60ff601f1a"
+    },
+    "expect": {
+      "stack": [
+        "0xff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "BYTE (30th)",
+    "hint": "The value on the stack is treated as 32 bytes, take 30st (counting from the most significant one)",
+    "code": {
+      "asm": "PUSH2 0xff00\nPUSH1 30\nBYTE",
+      "bin": "61ff00601e1a"
+    },
+    "expect": {
+      "stack": [
+        "0xff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "BYTE (29th)",
+    "hint": "Try to generalize your code to work with any argument",
+    "code": {
+      "asm": "PUSH3 0xff0000\nPUSH1 29\nBYTE",
+      "bin": "62ff0000601d1a"
+    },
+    "expect": {
+      "stack": [
+        "0xff"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "BYTE (out of range)",
+    "hint": "Treat other elements as zeros",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nPUSH1 42\nBYTE",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff602a1a"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "DUP1",
+    "hint": "Duplicate the first element from the stack and push it onto the stack",
+    "code": {
+      "asm": "PUSH1 1\nDUP1\nADD",
+      "bin": "60018001"
+    },
+    "expect": {
+      "stack": [
+        "0x2"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "DUP3",
+    "hint": "Duplicate the 3rd element from the stack and push it onto the stack",
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 2\nPUSH1 3\nDUP3",
+      "bin": "60016002600382"
+    },
+    "expect": {
+      "stack": [
+        "0x1",
+        "0x3",
+        "0x2",
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "DUP5",
+    "hint": "Try to implement your code to handle any DUP1...DUP16",
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 2\nPUSH1 3\nPUSH1 4\nPUSH1 5\nDUP5",
+      "bin": "6001600260036004600584"
+    },
+    "expect": {
+      "stack": [
+        "0x1",
+        "0x5",
+        "0x4",
+        "0x3",
+        "0x2",
+        "0x1"
+      ],
+      "success": true
+    }
   }
 ]
