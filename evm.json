@@ -1791,5 +1791,113 @@
       ],
       "success": true
     }
+  },
+  {
+    "name": "CODECOPY (tail)",
+    "hint": "Overflow bytes filled with zeros",
+    "code": {
+      "asm": "PUSH32 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff\nPOP\nPUSH1 2\nPUSH1 32\nPUSH1 0\nCODECOPY\nPUSH1 0\nMLOAD",
+      "bin": "7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff5060026020600039600051"
+    },
+    "expect": {
+      "stack": [
+        "0xff50000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "EXTCODESIZE (empty)",
+    "code": {
+      "asm": "PUSH20 0x1e79b045dc29eae9fdc69673c9dcd7c53e5e159d\nEXTCODESIZE",
+      "bin": "731e79b045dc29eae9fdc69673c9dcd7c53e5e159d3b"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "EXTCODESIZE",
+    "hint": "Read \"State\" section of the course learning materials",
+    "state": {
+      "0x1000000000000000000000000000000000000aaa": {
+        "code": {
+          "asm": "PUSH1 1",
+          "bin": "6001"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH20 0x1000000000000000000000000000000000000aaa\nEXTCODESIZE",
+      "bin": "731000000000000000000000000000000000000aaa3b"
+    },
+    "expect": {
+      "stack": [
+        "0x2"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "EXTCODECOPY",
+    "state": {
+      "0x1000000000000000000000000000000000000aaa": {
+        "code": {
+          "asm": null,
+          "bin": "6001"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 32\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000aaa\nEXTCODECOPY\nPUSH1 0\nMLOAD",
+      "bin": "602060006000731000000000000000000000000000000000000aaa3c600051"
+    },
+    "expect": {
+      "stack": [
+        "0x6001000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "EXTCODEHASH",
+    "hint": "Use the same library you used for SHA3 opcode",
+    "state": {
+      "0x1000000000000000000000000000000000000aaa": {
+        "code": {
+          "asm": null,
+          "bin": "FFFFFFFF"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH20 0x1000000000000000000000000000000000000aaa\nEXTCODEHASH",
+      "bin": "731000000000000000000000000000000000000aaa3f"
+    },
+    "expect": {
+      "stack": [
+        "0x29045a592007d0c246ef02c2223570da9522d0cf0f73282c79a1bc8f0bb2c238"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "EXTCODEHASH (empty)",
+    "code": {
+      "asm": "PUSH20 0x1000000000000000000000000000000000000aaa\nEXTCODEHASH",
+      "bin": "731000000000000000000000000000000000000aaa3f"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    },
+    "hint": ""
   }
 ]
