@@ -2082,5 +2082,305 @@
       ],
       "success": true
     }
+  },
+  {
+    "name": "RETURN",
+    "hint": "Read \"Calls and Returns\" section of the course learning materials",
+    "code": {
+      "asm": "PUSH1 0xA2\nPUSH1 0\nMSTORE\nPUSH1 1\nPUSH1 31\nRETURN",
+      "bin": "60a26000526001601ff3"
+    },
+    "expect": {
+      "success": true,
+      "return": "a2"
+    }
+  },
+  {
+    "name": "REVERT",
+    "hint": "Note that this test expects `success` to be false",
+    "code": {
+      "asm": "PUSH1 0xF1\nPUSH1 0\nMSTORE\nPUSH1 1\nPUSH1 31\nREVERT",
+      "bin": "60f16000526001601ffd"
+    },
+    "expect": {
+      "success": false,
+      "return": "f1"
+    }
+  },
+  {
+    "name": "CALL",
+    "hint": "Read \"Calls and Returns\" section of the course learning materials. Recursively call evm function from itself when handing this opcode",
+    "state": {
+      "0x1000000000000000000000000000000000000c42": {
+        "code": {
+          "asm": "PUSH1 0x42\nPUSH1 0\nMSTORE\nPUSH1 1\nPUSH1 31\nRETURN",
+          "bin": "60426000526001601ff3"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 31\nPUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000c42\nPUSH1 0\nCALL\nPUSH1 0\nMLOAD",
+      "bin": "6001601f600060006000731000000000000000000000000000000000000c426000f1600051"
+    },
+    "expect": {
+      "stack": [
+        "0x42",
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "CALL (returns address)",
+    "hint": "In the inner context, the CALLER is the contract we are sending the initial transaction to",
+    "tx": {
+      "to": "0x1000000000000000000000000000000000000aaa"
+    },
+    "state": {
+      "0x1000000000000000000000000000000000000c42": {
+        "code": {
+          "asm": "CALLER\nPUSH1 0\nMSTORE\nPUSH1 32\nPUSH1 0\nRETURN",
+          "bin": "3360005260206000f3"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 32\nPUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000c42\nPUSH1 0\nCALL\nPUSH1 0\nMLOAD",
+      "bin": "60206000600060006000731000000000000000000000000000000000000c426000f1600051"
+    },
+    "expect": {
+      "stack": [
+        "0x1000000000000000000000000000000000000aaa",
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "CALL (reverts)",
+    "hint": "Reverts can also return data",
+    "state": {
+      "0x1000000000000000000000000000000000000c42": {
+        "code": {
+          "asm": "PUSH1 0x42\nPUSH1 0\nMSTORE\nPUSH1 1\nPUSH1 31\nREVERT",
+          "bin": "60426000526001601ffd"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 31\nPUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000c42\nPUSH1 0\nCALL\nPUSH1 0\nMLOAD",
+      "bin": "6001601f600060006000731000000000000000000000000000000000000c426000f1600051"
+    },
+    "expect": {
+      "stack": [
+        "0x42",
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "RETURNDATASIZE (empty)",
+    "code": {
+      "asm": "RETURNDATASIZE",
+      "bin": "3d"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "RETURNDATASIZE",
+    "state": {
+      "0x1000000000000000000000000000000000000c42": {
+        "code": {
+          "asm": "PUSH1 0x42\nPUSH1 0\nMSTORE\nPUSH1 1\nPUSH1 31\nRETURN",
+          "bin": "60426000526001601ff3"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000c42\nPUSH1 0\nCALL\nPOP\nRETURNDATASIZE",
+      "bin": "60006000600060006000731000000000000000000000000000000000000c426000f1503d"
+    },
+    "expect": {
+      "stack": [
+        "0x1"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "RETURNDATACOPY",
+    "state": {
+      "0x1000000000000000000000000000000000000c42": {
+        "code": {
+          "asm": "PUSH1 0x42\nPUSH1 0\nMSTORE\nPUSH1 1\nPUSH1 31\nRETURN",
+          "bin": "60426000526001601ff3"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 31\nPUSH1 0\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000c42\nPUSH1 0\nCALL\nPOP\nPUSH1 1\nPUSH1 0\nPUSH1 0xff\nRETURNDATACOPY\nPUSH1 0xff\nMLOAD",
+      "bin": "6001601f600060006000731000000000000000000000000000000000000c426000f1506001600060ff3e60ff51"
+    },
+    "expect": {
+      "stack": [
+        "0x4200000000000000000000000000000000000000000000000000000000000000"
+      ],
+      "success": true
+    },
+    "hint": ""
+  },
+  {
+    "name": "DELEGATECALL",
+    "hint": "Like CALL, but keep the transaction data (from, origin, address) and use the code from the other account",
+    "tx": {
+      "to": "0x1000000000000000000000000000000000000aaa"
+    },
+    "state": {
+      "0xdddddddddddddddddddddddddddddddddddddddd": {
+        "code": {
+          "asm": "ADDRESS\nPUSH1 0\nSSTORE",
+          "bin": "30600055"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 0\nDUP1\nDUP1\nDUP1\nPUSH20 0xdddddddddddddddddddddddddddddddddddddddd\nGAS\nDELEGATECALL\nPUSH1 0\nSLOAD",
+      "bin": "600080808073dddddddddddddddddddddddddddddddddddddddd5af4600054"
+    },
+    "expect": {
+      "stack": [
+        "0x1000000000000000000000000000000000000aaa",
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "STATICCALL",
+    "hint": "Like CALL, but disable state modifications",
+    "state": {
+      "0x1000000000000000000000000000000000000c42": {
+        "code": {
+          "asm": "PUSH1 0x42\nPUSH1 0\nMSTORE\nPUSH1 1\nPUSH1 31\nRETURN",
+          "bin": "60426000526001601ff3"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 31\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000c42\nPUSH1 0\nSTATICCALL\nPUSH1 0\nMLOAD",
+      "bin": "6001601f60006000731000000000000000000000000000000000000c426000fa600051"
+    },
+    "expect": {
+      "stack": [
+        "0x42",
+        "0x1"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "STATICCALL (reverts on write)",
+    "hint": "Use a flag to tell the evm function whenever the context is writeable (CALL) or not (STATICCALL)",
+    "state": {
+      "0x1000000000000000000000000000000000000c42": {
+        "code": {
+          "asm": "PUSH1 0x42\nPUSH1 0\nSSTORE",
+          "bin": "6042600055"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 1\nPUSH1 31\nPUSH1 0\nPUSH1 0\nPUSH20 0x1000000000000000000000000000000000000c42\nPUSH1 0\nSTATICCALL",
+      "bin": "6001601f60006000731000000000000000000000000000000000000c426000fa"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "CREATE (empty)",
+    "hint": "Read \"Creating new contracts\" section of the course learning materials. This code creates a new empty account with balance 9",
+    "tx": {
+      "to": "0x9bbfed6889322e016e0a02ee459d306fc19545d8"
+    },
+    "code": {
+      "asm": "PUSH1 0\nPUSH1 0\nPUSH1 9\nCREATE\nBALANCE",
+      "bin": "600060006009f031"
+    },
+    "expect": {
+      "stack": [
+        "0x9"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "CREATE (with 4x FF)",
+    "hint": "Read \"Creating new contracts\" section of the course learning materials. CALL with the given code, store the returned bytes as new contracts bytecode",
+    "tx": {
+      "to": "0x9bbfed6889322e016e0a02ee459d306fc19545d8"
+    },
+    "code": {
+      "asm": "PUSH1 32\nPUSH1 0\nPUSH1 0\nPUSH13 0x63FFFFFFFF6000526004601CF3\nPUSH1 0\nMSTORE\nPUSH1 13\nPUSH1 19\nPUSH1 0\nCREATE\nEXTCODECOPY\nPUSH1 0\nMLOAD",
+      "bin": "6020600060006c63ffffffff6000526004601cf3600052600d60136000f03c600051"
+    },
+    "expect": {
+      "stack": [
+        "0xffffffff00000000000000000000000000000000000000000000000000000000"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "CREATE (reverts)",
+    "hint": "No address when constructor code reverts",
+    "tx": {
+      "to": "0x9bbfed6889322e016e0a02ee459d306fc19545d8"
+    },
+    "code": {
+      "asm": "PUSH13 0x63FFFFFFFF6000526004601CFD\nPUSH1 0\nMSTORE\nPUSH1 13\nPUSH1 19\nPUSH1 0\nCREATE",
+      "bin": "6c63ffffffff6000526004601cfd600052600d60136000f0"
+    },
+    "expect": {
+      "stack": [
+        "0x0"
+      ],
+      "success": true
+    }
+  },
+  {
+    "name": "SELFDESTRUCT",
+    "hint": "Note that for simplicity, this opcode should delete the account from the state. In the real EVM this happens only after the transaction has been processed, but that would overcomplicate these tests",
+    "state": {
+      "0xdead00000000000000000000000000000000dead": {
+        "balance": "0x7",
+        "code": {
+          "asm": "PUSH20 0xa1c300000000000000000000000000000000a1c3\nSELFDESTRUCT",
+          "bin": "73a1c300000000000000000000000000000000a1c3ff"
+        }
+      }
+    },
+    "code": {
+      "asm": "PUSH1 0\nDUP1\nDUP1\nDUP1\nDUP1\nPUSH20 0xdead00000000000000000000000000000000dead\nGAS\nCALL\nPOP\nPUSH20 0xa1c300000000000000000000000000000000a1c3\nBALANCE\nPUSH20 0xdead00000000000000000000000000000000dead\nEXTCODESIZE",
+      "bin": "60008080808073dead00000000000000000000000000000000dead5af15073a1c300000000000000000000000000000000a1c33173dead00000000000000000000000000000000dead3b"
+    },
+    "expect": {
+      "stack": [
+        "0x0",
+        "0x7"
+      ],
+      "success": true
+    }
   }
 ]
