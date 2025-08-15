@@ -334,5 +334,10 @@ pub fn evm(_code: impl AsRef<[u8]>) -> EvmResult {
         }
     }
     
-    
+    // TODO: Implement me
+    stack.reverse();
+    return EvmResult {
+        stack: stack,
+        success: true,
+    };
 }
