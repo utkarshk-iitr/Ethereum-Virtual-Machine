@@ -5,4 +5,4 @@ The test cases are organized by complexity, and you may build your own templates
 
 ## Credits
 
-This was made by Utkarsh Kumar, Adesh Palkar
+This was made by Utkarsh Kumar, Adesh Palkar, Gaurav Chaudhari.
